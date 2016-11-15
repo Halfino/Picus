@@ -1,0 +1,173 @@
+#include <Servo.h>
+
+#define DIR_AHEAD 1
+#define DIR_BACKWARD 2
+#define DIR_LEFT 3
+#define DIR_RIGHT 4
+#define trigPin 7
+#define echoPin 8
+
+Servo myservo;
+
+int M1_Left = 12; //Rotace motoru A
+int M1_Right = 10; //Rotace motoru A
+int M2_Left = 13; //Rotace motoru B
+int M2_Right = 11; //Rotace motoru B
+int pos; //Pozice serva - doladit
+float distance;
+int state;
+void setup() {
+  //Nastaveni pių motorkų
+  pinMode(M1_Left, OUTPUT);
+  pinMode(M1_Right , OUTPUT);
+  pinMode(M2_Left, OUTPUT);
+  pinMode(M2_Right , OUTPUT);
+  pos = 0;
+  
+  //Nastavení serva
+  myservo.attach(5);
+  Serial.begin (9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  servo1();
+}
+
+
+void go(int direction){
+  
+  boolean inPin1 = LOW;
+  boolean inPin2 = HIGH;
+  boolean inPin3 = HIGH;
+  boolean inPin4 = LOW;
+  
+  if (direction == DIR_AHEAD) {
+    inPin1 = HIGH;
+    inPin2 = LOW;
+    inPin3 = LOW;
+    inPin4 = HIGH;
+  }
+
+  if (direction == DIR_RIGHT) {
+    inPin1 = LOW;
+    inPin2 = HIGH;
+    inPin3 = LOW;
+    inPin4 = LOW;
+  }
+  
+  digitalWrite(M1_Left, inPin1);
+  digitalWrite(M1_Right , inPin2);
+  digitalWrite(M2_Left, inPin3);
+  digitalWrite(M2_Right , inPin4);
+  delay(250);
+}
+
+void stop() {
+  digitalWrite(M1_Left, LOW);
+  digitalWrite(M1_Right , LOW);
+  digitalWrite(M2_Left, LOW);
+  digitalWrite(M2_Right , LOW);
+  delay(250);
+}
+
+void servo1(){
+  
+  for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(5);
+      long duration, distance;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration / 2) / 29.1;
+  if (distance < 15){
+    state = 1;}
+    else if(distance >=15 && distance <= 20){
+      state = 2; 
+    }
+    else{
+      state = 10;
+  }
+  //Serial.println(distance);
+    
+    // waits 15ms for the servo to reach the position
+  }
+  for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+    myservo.write(pos);              // tell servo to go to position in variable 'pos'
+        Serial.println(pos);
+    long duration, distance;
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+    distance = (duration / 2) / 29.1;
+    //delay(5);
+    while(pos < 70){  //problem vlevo
+      if (distance < 15){
+    state = 1;}
+    else if(distance >=15 && distance <= 20){
+      state = 2; 
+    }
+    else{
+      state = 10;
+    }
+    while(pos >= 70 && <= 140){ //problem vpredu
+      if (distance < 15){
+    state = 1;}
+    else if(distance >=15 && distance <= 20){
+      state = 2; 
+    }
+    else{
+      state = 10;
+    }
+    while(pos > 140){ //problem vpravo
+      if (distance < 15){
+    state = 1;}
+    else if(distance >=15 && distance <= 20){
+      state = 2; 
+    }
+    else{
+      state = 10;
+    }
+
+    
+  }
+  //Serial.println(distance);
+  }
+  //Serial.println(state);
+  if (state == 1) {
+    Serial.println("couva");
+
+    go(DIR_BACKWARD);
+    stop();
+    go(DIR_RIGHT);
+    stop();
+  }
+  else if(state == 2){
+    Serial.println("turn");
+    go(DIR_RIGHT);
+    stop();
+  }
+  else {
+    Serial.println("OK");
+    // put your main code here, to run repeatedly:
+    go(DIR_AHEAD);
+    stop();
+  }
+  //sensor1();
+}
+
+  
+
+  //delay(500);
+
+
+
