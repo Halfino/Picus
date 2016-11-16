@@ -1,9 +1,7 @@
+//Right motor has another characteristic. That is China Industry problem...needs debug via analog write with precise speed. 
+//The best match must be found, or buy another motor. otherwise works fine. Need some testing and debug distances and times.
 #include <Servo.h>
 
-//#define DIR_AHEAD 1
-//#define DIR_BACKWARD 2
-//#define DIR_LEFT 3
-//#define DIR_RIGHT 4
 #define trigPin 7
 #define echoPin 8
 
