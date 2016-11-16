@@ -48,13 +48,13 @@ void go_back(int duration){
   delay(duration);
 }
 void go_left(int duration){
-  analogWrite (M1_Left, 10);
-  analogWrite (M2_Right, 250);
+  analogWrite (M1_Left, 0);
+  analogWrite (M2_Right, 220);
   delay(duration);
 }
 void go_right(int duration){
   analogWrite (M1_Left, 140);
-  analogWrite (M2_Right, 10);
+  analogWrite (M2_Right, 0);
   delay(duration);
 }
 /**
@@ -103,7 +103,10 @@ void car(){
       myservo.writeMicroseconds (2000); //almsot center to right
       pos = 2;
       delay(100);
-      state = 3;
+      state = 2;
+      if(dist() < 15){ //state if obstacle is too close
+        state = 4;
+      }
      }
      else if(pos == 2)
      {
@@ -119,7 +122,10 @@ void car(){
       myservo.writeMicroseconds (2000); //almost center to right
       pos = 4;
       delay(100);
-      state = 3;
+      state = 2;
+      if(dist() < 15){ //state if obstacle is too close
+        state = 4;
+      }
      }
      else if(pos  == 4)
      {
@@ -133,7 +139,10 @@ void car(){
       myservo.writeMicroseconds (1600);//almost center to left
       pos = 6;
       delay(100);
-      state = 3;
+      state = 1;
+      if(dist() < 15){
+        state = 5;
+      }
      }
      else if(pos == 6) //state if obstacle is too close
      {
@@ -141,7 +150,6 @@ void car(){
       pos = 7;
       delay(100);
       state = 1;
-      
       if(dist() < 15){
         state = 5;
       }
@@ -151,7 +159,10 @@ void car(){
       myservo.writeMicroseconds (1600);//almost center to left
       pos = 1;
       delay(100);
-      state = 3;
+      state = 1;
+      if(dist() < 15){
+        state = 5;
+      }
      }
      go_ahead(1);
      b_distance = dist();
