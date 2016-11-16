@@ -87,7 +87,7 @@ int dist(){
 void car(){
   int b_distance = dist();
 
-  while (b_distance > 35 || b_distance < 0){
+  while (b_distance > 35 || b_distance < -10){
     if(pos == 0)
      {
       myservo.writeMicroseconds (1800); //center
@@ -103,10 +103,13 @@ void car(){
      }
      else if(pos == 2)
      {
-     myservo.writeMicroseconds (2600); //servo right
+      myservo.writeMicroseconds (2600); //servo right
       pos = 3;
-     delay(300);
-     state = 2;
+      delay(300);
+      state = 2;
+      if(dist() < 15){ //state if obstacle is too close
+        state = 4;
+      }
      }
      else if(pos == 3){
       myservo.writeMicroseconds (2000); //almost center to right
@@ -128,12 +131,16 @@ void car(){
       delay(300);
       state = 3;
      }
-     else if(pos == 6)
+     else if(pos == 6) //state if obstacle is too close
      {
       myservo.writeMicroseconds (1200); //servo left
       pos = 7;
       delay(300);
       state = 1;
+      
+      if(dist() < 15){
+        state = 5;
+      }
      }
      else if(pos == 7)
      {
@@ -162,6 +169,20 @@ void avoid(){
       delay(1);
       break;
     case 3:
+      go_back(500);
+      stop();
+      delay(700);
+      go_right(400);
+      delay(1);
+      break;
+    case 4:
+      go_back(500);
+      stop();
+      delay(700);
+      go_left(400);
+      delay(1);
+      break;
+    case 5:
       go_back(500);
       stop();
       delay(700);
