@@ -1,0 +1,145 @@
+#include <Servo.h>
+
+//#define DIR_AHEAD 1
+//#define DIR_BACKWARD 2
+//#define DIR_LEFT 3
+//#define DIR_RIGHT 4
+#define trigPin 7
+#define echoPin 8
+
+Servo myservo;
+
+int M1_Left = 12; //Rotace motoru A
+int M1_Right = 10; //Rotace motoru A
+int M2_Left = 13; //Rotace motoru B
+int M2_Right = 11; //Rotace motoru B
+int pos = 0; //Pozice serva - doladit
+int state;
+void setup() {
+  //Nastaveni pinu motorkų
+  pinMode(M1_Left, OUTPUT);
+  pinMode(M1_Right , OUTPUT);
+  pinMode(M2_Left, OUTPUT);
+  pinMode(M2_Right , OUTPUT);
+  Serial.begin(9600);
+  //Nastavení serva
+  myservo.attach(5);
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  car();
+  avoid();
+}
+
+void go_ahead(int duration){
+  analogWrite(M1_Left, 150);
+  analogWrite(M2_Right, 250); //pomalejsi jizda. pravej motor se toci pomaleji nez levej. Bud spatne zapojeno, nebo problem s ubytkem napeti...Bud to vyresi druhej set baterek,nebo ne.
+  delay(duration);
+}
+
+void go_back(int duration){
+  digitalWrite (M1_Left, LOW);
+  digitalWrite (M1_Right, HIGH);
+  digitalWrite (M2_Left, HIGH);
+  digitalWrite (M2_Right, LOW);
+  delay(duration);
+}
+void go_left(int duration){
+  analogWrite (M1_Left, 10);
+  analogWrite (M2_Right, 140);
+  delay(duration);
+}
+void go_right(int duration){
+  analogWrite (M1_Left, 140);
+  analogWrite (M2_Right, 10);
+  delay(duration);
+}
+void slow(){
+  for(int speed = 255; speed >= 0; speed--){
+    analogWrite(M1_Left, speed);
+    analogWrite(M2_Right, speed);
+    delay(2);
+  }
+}
+void stop(){
+  digitalWrite (M1_Left, LOW);
+  digitalWrite (M1_Right, LOW);
+  digitalWrite (M2_Left, LOW);
+  digitalWrite (M2_Right, LOW);
+  delay(5);
+}
+
+int dist(){
+  int duration, distance;
+  digitalWrite(trigPin, LOW);
+    delayMicroseconds(5);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(15);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+    distance = (duration / 2) / 29.1;
+  return distance;
+}
+
+void car(){
+  int b_distance = dist();
+
+  while (b_distance > 35 || b_distance < 0){
+    if(pos == 0)
+     {
+      myservo.writeMicroseconds (1800);
+      pos = 1;
+      delay(300); 
+      state = 3;    
+     }
+     else if(pos == 1)
+     {
+     myservo.writeMicroseconds (2500);
+      pos = 2;
+     delay(300);
+     state = 2;
+     }
+     else if(pos  == 2)
+     {
+     myservo.writeMicroseconds (1800);
+      pos = 3;
+      delay(300);
+      state = 3;
+     }
+     else if(pos == 3)
+     {
+      myservo.writeMicroseconds (1200);
+      pos = 1;
+      delay(300);
+      state = 1;
+     }
+     go_ahead(1);
+     b_distance = dist();
+  }
+      
+  stop();
+
+}
+
+void avoid(){
+  Serial.println(state);
+  switch(state){
+    case 1:
+      go_right(250);
+      break;
+    case 2:
+      go_left(250);
+      break;
+    case 3:
+      go_back(400);
+      stop();
+      delay(300);
+      go_right(400);
+      break;
+  }
+  delay(1);
+}
+
