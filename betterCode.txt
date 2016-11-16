@@ -57,13 +57,17 @@ void go_right(int duration){
   analogWrite (M2_Right, 10);
   delay(duration);
 }
-void slow(){
-  for(int speed = 255; speed >= 0; speed--){
-    analogWrite(M1_Left, speed);
-    analogWrite(M2_Right, speed);
-    delay(2);
-  }
-}
+/**
+ * can be implemented when both motors work with the same speed. now unable. same with accelerate function.
+ * 
+ * void slow(){
+ * for(int speed = 255; speed >= 0; speed--){
+ *   analogWrite(M1_Left, speed);
+ *   analogWrite(M2_Right, speed);
+ *   delay(2);
+ * }
+ *}
+ */
 void stop(){
   digitalWrite (M1_Left, LOW);
   digitalWrite (M1_Right, LOW);
@@ -92,20 +96,20 @@ void car(){
      {
       myservo.writeMicroseconds (1800); //center
       pos = 1;
-      delay(300); 
+      delay(100); 
       state = 3;    
      }
      else if(pos == 1){
       myservo.writeMicroseconds (2000); //almsot center to right
       pos = 2;
-      delay(300);
+      delay(100);
       state = 3;
      }
      else if(pos == 2)
      {
       myservo.writeMicroseconds (2600); //servo right
       pos = 3;
-      delay(300);
+      delay(100);
       state = 2;
       if(dist() < 15){ //state if obstacle is too close
         state = 4;
@@ -114,28 +118,28 @@ void car(){
      else if(pos == 3){
       myservo.writeMicroseconds (2000); //almost center to right
       pos = 4;
-      delay(300);
+      delay(100);
       state = 3;
      }
      else if(pos  == 4)
      {
      myservo.writeMicroseconds (1800); //center
       pos = 5;
-      delay(300);
+      delay(100);
       state = 3;
      }
      else if(pos == 5)
      {
       myservo.writeMicroseconds (1600);//almost center to left
       pos = 6;
-      delay(300);
+      delay(100);
       state = 3;
      }
      else if(pos == 6) //state if obstacle is too close
      {
       myservo.writeMicroseconds (1200); //servo left
       pos = 7;
-      delay(300);
+      delay(100);
       state = 1;
       
       if(dist() < 15){
@@ -146,7 +150,7 @@ void car(){
      {
       myservo.writeMicroseconds (1600);//almost center to left
       pos = 1;
-      delay(300);
+      delay(100);
       state = 3;
      }
      go_ahead(1);
@@ -161,35 +165,30 @@ void avoid(){
   Serial.println(state);
   switch(state){
     case 1:
-      go_right(250);
-      delay(1);
+      go_right(50);
       break;
     case 2:
-      go_left(250);
-      delay(1);
+      go_left(50);
       break;
     case 3:
       go_back(500);
       stop();
       delay(700);
-      go_right(400);
-      delay(1);
+      go_right(300);
       break;
     case 4:
       go_back(500);
       stop();
       delay(700);
-      go_left(400);
-      delay(1);
+      go_left(300);
       break;
     case 5:
       go_back(500);
       stop();
       delay(700);
-      go_right(400);
-      delay(1);
+      go_right(300);
       break;
   }
-  delay(1);
+  delay(50); //for stability
 }
 
